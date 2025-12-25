@@ -55,106 +55,265 @@ Config = {
      }
  }
  
- -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- -- LANGS
- -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- Config.Langs = {
-     ['noProximityVehicle'] = function() 
-         TriggerEvent('Notify', 'negado', 'Nenhum veículo próximo.') 
-     end,
-     ['notVehicleOwner'] = function(source) 
-         TriggerClientEvent('Notify', source, 'negado', 'Você não é o proprietário desse veículo.') 
-     end,
-     ['suspensionNotConfigured'] = function(source) 
-         TriggerEvent('Notify', 'negado', 'Suspensão a Ar não configurada para esse veículo.') 
-     end,
-     ['vehicleAlreadyInstalled'] = function(source) 
-         TriggerClientEvent('Notify', source, 'negado', 'Veículo já possui a suspensão a AR instalada.') 
-     end,
-     ['vehicleNotFound'] = function(source) 
-         TriggerClientEvent('Notify', source, 'negado', 'Veículo não encontrado.') 
-     end,
-     ['vehicleNotFoundPlayer'] = function(source) 
-         TriggerClientEvent('Notify', source, 'negado', 'Veículo não encontrado na garagem do jogador.') 
-     end,
-     ['noAirInCylinder'] = function() 
-         TriggerEvent('Notify', 'negado', 'Sem ar no cilindro para encher.') 
-     end,
-     ['maxLimitReached'] = function() 
-         TriggerEvent('Notify', 'negado', 'Limite máximo atingido.') 
-     end,
-     ['minLimitReached'] = function() 
-         TriggerEvent('Notify', 'negado', 'Limite mínimo atingido.') 
-     end,
-     ['notAirInBag'] = function() 
-         TriggerEvent('Notify', 'negado', 'Você precisa no minimo de 50 de AR em seu cilindro você fazer isso.') 
-     end,
-     ['waitThis'] = function() 
-         TriggerEvent('Notify', 'negado', 'Aguarde para fazer isso.') 
-     end,
-     ['exitVehicleToInstall'] = function()
-         TriggerEvent('Notify', 'negado', 'Você está em um veiculo, saia dele para instalar a suspensão a AR')
-     end,
-     ['nearHoodToInstall'] = function()
-         TriggerEvent('Notify', 'negado', 'Você precisa estar próximo ao capô do veículo para instalar a suspensão a AR')
-     end,
-     ['installingSuspension'] = function()
-         TriggerEvent('Notify', 'sucesso', 'Instalando Suspension a AR...')
-     end,
-     ['waitToExecute'] = function()
-         TriggerEvent('Notify', 'negado', 'Aguarde para executar')
-     end,
-     ['notOwnerOrNotInstalled'] = function()
-         TriggerEvent('Notify', 'negado', 'Você não é o proprietário desse veículo ou não possui a suspensão a AR instalada.')
-     end
- }
- 
- -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- -- FUNCTIONS
- -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- if SERVER then
-     function getUserId(source)
-         return vRP.getUserId(source)
-     end
- 
-     function getUserByRegistration(plate) 
-         return vRP.getUserByRegistration(plate) or false
-     end
- 
-     function hasPermission(user_id, permission)
-         return vRP.hasPermission(user_id, permission)
-     end
- 
-     function getUData(user_id, key)
-         return json.decode(vRP.getUData(user_id, key)) or {}
-     end
- 
-     function setUData(user_id, key, value)
-         vRP.setUData(user_id, key, json.encode(value))
-     end
- 
-     function getSData(key)
-         return json.decode(vRP.getSData(key)) or {}
-     end
- 
-     function setSData(key, value)
-         vRP.setSData(key, json.encode(value))
-     end
- 
-     function getInventoryItemAmount(user_id, item)
-         return vRP.getInventoryItemAmount(user_id, item)
-     end
- 
-     function getVehicleName(model, modelName)
-         -- model = hash 
-         -- modelname = vehName ( adder, t20 e etc ) alguns veiculos addons não funciona
-         -- caso queira usar o nome do veiculo, fazer o filtro utilizando model na sua lista de veiculo
- 
-         return tostring(model)
-     end
- else
-     function playAnim(dict, anim)
-         local anim = { dict, anim }
-         vRP.playAnim(false, { anim }, true)
-     end
- end
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- LANGS
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Config.Langs = {
+    ['noProximityVehicle'] = function(source) 
+        if IsDuplicityVersion() then -- SERVER
+            local xPlayer = ESX.GetPlayerFromId(source)
+            if xPlayer then
+                xPlayer.showNotification('Nenhum veículo próximo', 'error')
+            end
+        else -- CLIENT
+            ESX.ShowNotification('Nenhum veículo próximo', 'error')
+        end
+    end,
+    
+    ['notVehicleOwner'] = function(source) 
+        if IsDuplicityVersion() then
+            local xPlayer = ESX.GetPlayerFromId(source)
+            if xPlayer then
+                xPlayer.showNotification('Você não é o proprietário desse veículo', 'error')
+            end
+        else
+            ESX.ShowNotification('Você não é o proprietário desse veículo', 'error')
+        end
+    end,
+    
+    ['suspensionNotConfigured'] = function(source) 
+        if IsDuplicityVersion() then
+            local xPlayer = ESX.GetPlayerFromId(source)
+            if xPlayer then
+                xPlayer.showNotification('Suspensão a AR não configurada para esse veículo', 'error')
+            end
+        else
+            ESX.ShowNotification('Suspensão a AR não configurada para esse veículo', 'error')
+        end
+    end,
+    
+    ['vehicleAlreadyInstalled'] = function(source) 
+        if IsDuplicityVersion() then
+            local xPlayer = ESX.GetPlayerFromId(source)
+            if xPlayer then
+                xPlayer.showNotification('Veículo já possui suspensão a AR instalada', 'error')
+            end
+        else
+            ESX.ShowNotification('Veículo já possui suspensão a AR instalada', 'error')
+        end
+    end,
+    
+    ['vehicleNotFound'] = function(source) 
+        if IsDuplicityVersion() then
+            local xPlayer = ESX.GetPlayerFromId(source)
+            if xPlayer then
+                xPlayer.showNotification('Veículo não encontrado', 'error')
+            end
+        else
+            ESX.ShowNotification('Veículo não encontrado', 'error')
+        end
+    end,
+    
+    ['vehicleNotFoundPlayer'] = function(source) 
+        if IsDuplicityVersion() then
+            local xPlayer = ESX.GetPlayerFromId(source)
+            if xPlayer then
+                xPlayer.showNotification('Veículo não encontrado na garagem', 'error')
+            end
+        else
+            ESX.ShowNotification('Veículo não encontrado na garagem', 'error')
+        end
+    end,
+    
+    ['noAirInCylinder'] = function(source) 
+        if IsDuplicityVersion() then
+            local xPlayer = ESX.GetPlayerFromId(source)
+            if xPlayer then
+                xPlayer.showNotification('Sem ar no cilindro', 'error')
+            end
+        else
+            ESX.ShowNotification('Sem ar no cilindro', 'error')
+        end
+    end,
+    
+    ['maxLimitReached'] = function(source) 
+        if IsDuplicityVersion() then
+            local xPlayer = ESX.GetPlayerFromId(source)
+            if xPlayer then
+                xPlayer.showNotification('Limite máximo atingido', 'info')
+            end
+        else
+            ESX.ShowNotification('Limite máximo atingido', 'info')
+        end
+    end,
+    
+    ['minLimitReached'] = function(source) 
+        if IsDuplicityVersion() then
+            local xPlayer = ESX.GetPlayerFromId(source)
+            if xPlayer then
+                xPlayer.showNotification('Limite mínimo atingido', 'info')
+            end
+        else
+            ESX.ShowNotification('Limite mínimo atingido', 'info')
+        end
+    end,
+    
+    ['notAirInBag'] = function(source) 
+        if IsDuplicityVersion() then
+            local xPlayer = ESX.GetPlayerFromId(source)
+            if xPlayer then
+                xPlayer.showNotification('Você precisa no mínimo de 50 de AR no cilindro', 'error')
+            end
+        else
+            ESX.ShowNotification('Você precisa no mínimo de 50 de AR no cilindro', 'error')
+        end
+    end,
+    
+    ['waitThis'] = function(source) 
+        if IsDuplicityVersion() then
+            local xPlayer = ESX.GetPlayerFromId(source)
+            if xPlayer then
+                xPlayer.showNotification('Aguarde para fazer isso', 'error')
+            end
+        else
+            ESX.ShowNotification('Aguarde para fazer isso', 'error')
+        end
+    end,
+    
+    ['exitVehicleToInstall'] = function(source)
+        if IsDuplicityVersion() then
+            local xPlayer = ESX.GetPlayerFromId(source)
+            if xPlayer then
+                xPlayer.showNotification('Saia do veículo para instalar a suspensão', 'error')
+            end
+        else
+            ESX.ShowNotification('Saia do veículo para instalar a suspensão', 'error')
+        end
+    end,
+    
+    ['nearHoodToInstall'] = function(source)
+        if IsDuplicityVersion() then
+            local xPlayer = ESX.GetPlayerFromId(source)
+            if xPlayer then
+                xPlayer.showNotification('Aproxime-se do capô do veículo', 'error')
+            end
+        else
+            ESX.ShowNotification('Aproxime-se do capô do veículo', 'error')
+        end
+    end,
+    
+    ['installingSuspension'] = function(source)
+        if IsDuplicityVersion() then
+            local xPlayer = ESX.GetPlayerFromId(source)
+            if xPlayer then
+                xPlayer.showNotification('Instalando suspensão a AR...', 'info')
+            end
+        else
+            ESX.ShowNotification('Instalando suspensão a AR...', 'info')
+        end
+    end,
+    
+    ['waitToExecute'] = function(source)
+        if IsDuplicityVersion() then
+            local xPlayer = ESX.GetPlayerFromId(source)
+            if xPlayer then
+                xPlayer.showNotification('Aguarde para executar', 'error')
+            end
+        else
+            ESX.ShowNotification('Aguarde para executar', 'error')
+        end
+    end,
+    
+    ['notOwnerOrNotInstalled'] = function(source)
+        if IsDuplicityVersion() then
+            local xPlayer = ESX.GetPlayerFromId(source)
+            if xPlayer then
+                xPlayer.showNotification('Você não é proprietário ou não possui suspensão instalada', 'error')
+            end
+        else
+            ESX.ShowNotification('Você não é proprietário ou não possui suspensão instalada', 'error')
+        end
+    end
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- FUNCTIONS ESX-LEGACY
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+if IsDuplicityVersion() then -- SERVER
+    ESX = exports['es_extended']:getSharedObject()
+    
+    function getUserIdentifier(source)
+        local xPlayer = ESX.GetPlayerFromId(source)
+        return xPlayer and xPlayer.identifier or nil
+    end
+    
+    function getUserByRegistration(plate)
+        -- Remove espaços e normaliza a matrícula
+        plate = string.gsub(plate, '%s+', '')
+        plate = string.upper(plate)
+        
+        local result = MySQL.Sync.fetchAll('SELECT owner FROM owned_vehicles WHERE plate = @plate', {
+            ['@plate'] = plate
+        })
+        
+        if result and #result > 0 then
+            return result[1].owner
+        end
+        
+        return false
+    end
+    
+    function hasPermission(source, permission)
+        local xPlayer = ESX.GetPlayerFromId(source)
+        if not xPlayer then return false end
+        
+        -- Verifica por grupo de admin/moderador
+        if permission == 'perm.suspension' then
+            return xPlayer.getGroup() == 'admin' or 
+                   xPlayer.getGroup() == 'superadmin' or 
+                   xPlayer.getGroup() == 'mod' or
+                   xPlayer.getGroup() == 'vip' or
+                   xPlayer.getGroup() == 'vip_plus'
+        end
+        
+        -- Permissão de instalação (mecânicos + admins)
+        if permission == 'mirtin_suspension.install' then
+            local isAdmin = xPlayer.getGroup() == 'admin' or 
+                           xPlayer.getGroup() == 'superadmin' or 
+                           xPlayer.getGroup() == 'mod'
+            
+            local isMechanic = xPlayer.job.name == 'mechanic' or 
+                              xPlayer.job.name == 'mecano' or 
+                              xPlayer.job.name == 'bennys'
+            
+            return isAdmin or isMechanic
+        end
+        
+        return false
+    end
+    
+    function getInventoryItem(source, item)
+        local xPlayer = ESX.GetPlayerFromId(source)
+        if not xPlayer then return 0 end
+        
+        local itemData = xPlayer.getInventoryItem(item)
+        return itemData and itemData.count or 0
+    end
+    
+    function getVehicleName(model, modelName)
+        -- Retorna o hash do modelo como string
+        -- Você pode customizar isso para buscar em sua lista de veículos
+        return tostring(model)
+    end
+    
+else -- CLIENT
+    ESX = exports['es_extended']:getSharedObject()
+    
+    function playAnim(dict, anim)
+        RequestAnimDict(dict)
+        while not HasAnimDictLoaded(dict) do
+            Wait(10)
+        end
+        TaskPlayAnim(PlayerPedId(), dict, anim, 8.0, -8.0, -1, 0, 0, false, false, false)
+    end
+end
